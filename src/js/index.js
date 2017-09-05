@@ -1,12 +1,17 @@
-export default {
-  test () {
-    return 'test'
-  },
-  test2: () => {
-    return 'djak to działo'
-  },
-  data: {
-    test2: 'Marteczka'
+let Search = {
+  listenerAction (text) {
+    console.log(text, this)
   }
+};
 
-}
+window.onload = function () {
+  let searchInput = document.getElementById('search');
+
+  searchInput.addEventListener('input', (evt) => {
+    _.delay((evt) => {
+      Search.listenerAction(evt.target.value)
+    }, 1000, evt)
+  })
+};
+
+

@@ -2,10 +2,10 @@
   "name": "sii_code_challenge",
   "version": "1.0.0",
   "scripts": {
-    "build": "node-sass --include-path scss src/scss/main.scss lib/css/main.css --output-style compressed | babel src/js -d lib/js --minified",
+    "build": "node-sass --include-path scss src/scss/main.scss lib/css/main.css --output-style compressed | babel src/js -o lib/js/script.js --minified",
     "watch": "concurrently --kill-others \"npm run build-js\" \"npm run build-css\"",
-    "build-css": "node-sass -w --include-path scss src/scss/main.scss lib/css/main.css --output-style compressed",
-    "build-js": "babel src/js -w -d lib/js --minified"
+    "build-css": "node-sass -w --include-path scss src/scss/main.scss lib/css/main.css",
+    "build-js": "babel src/js -w -o lib/js/script.js"
   },
   "devDependencies": {
     "babel-cli": "^6.0.0",
