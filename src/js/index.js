@@ -1,6 +1,6 @@
 const MOVIEDB_API_KEY = 'fff2f288005425652515f2361d8b1964';
 const MOVIEDB_BASE_URL = 'https://api.themoviedb.org/3';
-const MOVIEDB_IMAGES_URL = 'https://image.tmdb.org/t/p';
+const MOVIEDB_IMAGES_URL = 'https://image.tmdb.org/t/p/w780/';
 const MOVIEDB_AUTHENTICATE_URL = 'https://www.themoviedb.org/authenticate/'
 
 const methods = {
@@ -44,11 +44,14 @@ let MovieDB = {
     return string;
   },
   listenerAction (textQuery) {
+    // TODO: what in case when questSessionId is on system but expired form API site - fix it or catch error
     this.guestSessionId ? this.searchMovie(textQuery) : this.authenticateUser(textQuery)
   },
   searchMovie (textQuery, page) {
     this.makeRequest('searchMovie', {query: textQuery, page: 1}).then((response) => {
       this.results = response
+    }).then(() => {
+      this.renderResultsList();
     })
   },
   authenticateUser (textQuery) {
@@ -62,8 +65,28 @@ let MovieDB = {
       console.log(error)
     })
   },
-  renderResults () {
-    // let container = document.getElementById('results');
+  renderResultsList () {
+    let container = document.getElementById('results');
+
+    this.results.results.forEach( (result) => {
+      let imageUrl = result.backdrop_path ? `${MOVIEDB_IMAGES_URL}${result.backdrop_path}` : 'https://assets.tmdb.org/images/v4/logos/91x81.png';
+      let template = `
+      <div class="result__header">
+        <img src="${imageUrl}" alt="">
+      </div>
+      <div class="result__body">
+        <h1>${result.title}</h1>
+        <span>${result.overview}</span>
+      </div>
+      <div class="result__footer">
+        <span>${result.vote_average}</span>
+        <span>${result.release_date}</span>
+      </div>`;
+
+      let div = document.createElement('div');
+      div.innerHTML = template;
+      container.insertBefore(div, null);
+    })
   }
 };
 
@@ -74,4 +97,9 @@ window.onload = function () {
   }, 1000))
 };
 
+
+// TODO: pagination
+// TODO: loader
+// TODO: empty result
+// TODO: style everything
 
