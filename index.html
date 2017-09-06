@@ -14,21 +14,22 @@
 <body>
 <div class="search">
   <div class="search__form">
-    <label for="search">Email address</label>
+
     <input type="text" class="search__form--input" id="search" aria-describedby="searchHelp"
            placeholder="Start typing and search all best movies in the world.">
-    <small id="searchHelp" class="search__form--helper">Type and give us some time to find best results for you.</small>
-  </div>
-  <div class="search__results" id="results">
-    <div class="result">
-      <div class="result__header">
 
-      </div>
-      <div class="result__body">
-
-      </div>
-      <div class="result__footer"></div>
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
     </div>
+  </div>
+  <div class="search__helper"></div>
+
+  <div class="search__results--header"></div>
+  <div class="search__results" id="results">
   </div>
 </div>
 <script src="lib/js/script.js"></script>

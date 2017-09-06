@@ -1,7 +1,7 @@
 const MOVIEDB_API_KEY = 'fff2f288005425652515f2361d8b1964';
 const MOVIEDB_BASE_URL = 'https://api.themoviedb.org/3';
 const MOVIEDB_IMAGES_URL = 'https://image.tmdb.org/t/p/w780/';
-const MOVIEDB_AUTHENTICATE_URL = 'https://www.themoviedb.org/authenticate/'
+const MOVIEDB_AUTHENTICATE_URL = 'https://www.themoviedb.org/authenticate/';
 
 const methods = {
   getToken: {url: 'authentication/token/new', type: 'GET'},
@@ -49,9 +49,9 @@ let MovieDB = {
   },
   searchMovie (textQuery, page) {
     this.makeRequest('searchMovie', {query: textQuery, page: 1}).then((response) => {
-      this.results = response
-    }).then(() => {
-      this.renderResultsList();
+      this.results = response;
+      this.renderResultsList(response.results);
+      document.querySelector('.spinner').style.display = 'none';
     })
   },
   authenticateUser (textQuery) {
@@ -65,18 +65,19 @@ let MovieDB = {
       console.log(error)
     })
   },
-  renderResultsList () {
+  renderResultsList (results) {
     let container = document.getElementById('results');
+    container.innerHTML = '';
 
-    this.results.results.forEach( (result) => {
+    results.forEach( (result) => {
       let imageUrl = result.backdrop_path ? `${MOVIEDB_IMAGES_URL}${result.backdrop_path}` : 'https://assets.tmdb.org/images/v4/logos/91x81.png';
       let template = `
       <div class="result__header">
         <img src="${imageUrl}" alt="">
       </div>
       <div class="result__body">
-        <h1>${result.title}</h1>
-        <span>${result.overview}</span>
+        <h1>${result.title || 'Unknown title'}</h1>
+        <span>${result.overview || 'Unknown description'}</span>
       </div>
       <div class="result__footer">
         <span>${result.vote_average}</span>
@@ -84,22 +85,45 @@ let MovieDB = {
       </div>`;
 
       let div = document.createElement('div');
+      div.classList = 'result';
       div.innerHTML = template;
       container.insertBefore(div, null);
     })
+
+    if (!results.length) {
+      let div = document.createElement('div');
+      div.classList = 'empty_result';
+      div.innerText = 'No results for your query.';
+      container.insertBefore(div, null)
+    }
   }
 };
 
 window.onload = function () {
   let searchInput = document.getElementById('search');
   searchInput.addEventListener('input', _.debounce(function (evt) {
-    MovieDB.listenerAction(evt.target.value)
-  }, 1000))
+    if (evt.target.value.length > 2) {
+      MovieDB.listenerAction(evt.target.value)
+    }
+  }, 1000));
+
+  searchInput.addEventListener('keyup', function (evt) {
+    let spinner = document.querySelector('.spinner');
+    let helper = document.querySelector('.search__helper');
+    let valLength = evt.target.value.length;
+
+    spinner.style.display = 'block';
+    helper.innerText = 'Type at least 3 characters.';
+    if (valLength === 0 ) {
+      spinner.style.display = 'none';
+      helper.innerText = '';
+    } else if (valLength >= 3) {
+      helper.innerText = '';
+    }
+  });
 };
 
 
 // TODO: pagination
-// TODO: loader
-// TODO: empty result
 // TODO: style everything
 
