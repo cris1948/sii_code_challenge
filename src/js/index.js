@@ -73,20 +73,19 @@ let MovieDB = {
       let imageUrl = result.backdrop_path ? `${MOVIEDB_IMAGES_URL}${result.backdrop_path}` : 'https://assets.tmdb.org/images/v4/logos/91x81.png';
       let template = `
       <div class="result__header">
-        <img src="${imageUrl}" alt="">
       </div>
       <div class="result__body">
-        <h1>${result.title || 'Unknown title'}</h1>
+        <h2>${result.title || 'Unknown title'}</h2>
         <span>${result.overview || 'Unknown description'}</span>
-      </div>
-      <div class="result__footer">
-        <span>${result.vote_average}</span>
-        <span>${result.release_date}</span>
       </div>`;
 
       let div = document.createElement('div');
       div.classList = 'result';
       div.innerHTML = template;
+      div.firstElementChild.style.backgroundImage = `url('${imageUrl}')`;
+      if (!result.backdrop_path) {
+        div.firstElementChild.classList.add('default_image')
+      }
       container.insertBefore(div, null);
     })
 
