@@ -1,7 +1,6 @@
 const MOVIEDB_API_KEY = 'fff2f288005425652515f2361d8b1964';
 const MOVIEDB_BASE_URL = 'https://api.themoviedb.org/3';
 const MOVIEDB_IMAGES_URL = 'https://image.tmdb.org/t/p/w780/';
-const MOVIEDB_AUTHENTICATE_URL = 'https://www.themoviedb.org/authenticate/';
 
 const methods = {
   getToken: {url: 'authentication/token/new', type: 'GET'},
@@ -55,7 +54,7 @@ let MovieDB = {
     })
   },
   authenticateUser (textQuery) {
-    this.makeRequest('getToken').then((response) => {
+    this.makeRequest('getToken').then(() => {
       return this.makeRequest('createGuestSession');
     }).then((response) => {
       this.guestSessionId = response.guest_session_id;
@@ -87,7 +86,7 @@ let MovieDB = {
         div.firstElementChild.classList.add('default_image')
       }
       container.insertBefore(div, null);
-    })
+    });
 
     if (!results.length) {
       let div = document.createElement('div');
@@ -122,7 +121,5 @@ window.onload = function () {
   });
 };
 
-
 // TODO: pagination
-// TODO: style everything
 
