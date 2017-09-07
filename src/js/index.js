@@ -12,6 +12,8 @@ const methods = {
 let MovieDB = {
   guestSessionId: null,
   results: null,
+  page: 0,
+  query: null,
   makeRequest (method, data) {
     return new Promise(function (resolve, reject) {
       let xhr = new XMLHttpRequest();
@@ -36,7 +38,6 @@ let MovieDB = {
     let string = `?api_key=${MOVIEDB_API_KEY}`;
     if (data) {
       Object.keys(data).forEach((key) => {
-        console.log(data[key]);
         string += `&${key}=${data[key]}`
       });
     }
@@ -46,11 +47,38 @@ let MovieDB = {
     // TODO: what in case when questSessionId is on system but expired form API site - fix it or catch error
     this.guestSessionId ? this.searchMovie(textQuery) : this.authenticateUser(textQuery)
   },
-  searchMovie (textQuery, page) {
-    this.makeRequest('searchMovie', {query: textQuery, page: 1}).then((response) => {
+  searchMovie (textQuery) {
+    let page;
+    
+    if (this.results || (this.query !== null && textQuery !== this.query)) {
+      let totalPages = this.results.total_pages;
+      if (textQuery === this.query && totalPages > 1) {
+        page = this.page + 1;
+        this.page += 1;
+        if (this.page >= totalPages) {
+            page = totalPages;
+        }
+      } else {
+        page = 1;
+        this.query = textQuery;
+      }
+    } else {
+      page = 1;
+      this.page = 1;
+      this.query = textQuery;
+    }
+    if (page <= 0) {
+        page = 1;
+        this.page = 1;
+    }
+
+    let query = {query: textQuery, page: page};
+
+    this.makeRequest('searchMovie', query).then((response) => {
       this.results = response;
       this.renderResultsList(response.results);
       document.querySelector('.spinner').style.display = 'none';
+      document.querySelector('.pages').innerText = ` ${page} / ${response.total_pages}`
     })
   },
   authenticateUser (textQuery) {
@@ -71,8 +99,7 @@ let MovieDB = {
     results.forEach( (result) => {
       let imageUrl = result.backdrop_path ? `${MOVIEDB_IMAGES_URL}${result.backdrop_path}` : 'https://assets.tmdb.org/images/v4/logos/91x81.png';
       let template = `
-      <div class="result__header">
-      </div>
+      <div class="result__header"></div>
       <div class="result__body">
         <h2>${result.title || 'Unknown title'}</h2>
         <span>${result.overview || 'Unknown description'}</span>
@@ -99,6 +126,18 @@ let MovieDB = {
 
 window.onload = function () {
   let searchInput = document.getElementById('search');
+  let buttons = document.querySelectorAll('.nav-button');
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', (evt) => {
+      let btnType = evt.target.getAttribute('data-page');
+      if (btnType < 0) {
+          MovieDB.page -= 2;
+      }
+      MovieDB.searchMovie(MovieDB.query)
+    })
+  });
+
   searchInput.addEventListener('input', _.debounce(function (evt) {
     if (evt.target.value.length > 2) {
       MovieDB.listenerAction(evt.target.value)

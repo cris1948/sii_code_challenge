@@ -17,7 +17,16 @@
   }
 
   &__helper {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
+  }
+
+  &__results{
+    clear: both;
+
+    &--header {
+      float: right;
+      margin-bottom: 15px;
+    }
   }
 }
 
