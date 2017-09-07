@@ -44,7 +44,6 @@ let MovieDB = {
     return string;
   },
   listenerAction (textQuery) {
-    // TODO: what in case when questSessionId is on system but expired form API site - fix it or catch error
     this.guestSessionId ? this.searchMovie(textQuery) : this.authenticateUser(textQuery)
   },
   searchMovie (textQuery) {
@@ -159,6 +158,4 @@ window.onload = function () {
     }
   });
 };
-
-// TODO: pagination
 
